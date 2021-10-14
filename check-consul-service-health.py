@@ -1,20 +1,17 @@
 #!/usr/bin/python
 """Usage: 
-    check-consul-health.py node NODE DC
+    check_consul_service_health SERVICE
         [--addr=ADDR]
-        [--CheckID=CheckID | --ServiceName=ServiceName]
         [--verbose]
 
 Arguments:
-    NODE  the consul node_name
-    DC    the consul datacenter
+    SERVICE  the consul service
 
 Options:
     -h --help                  show this
     -v --verbose               verbose output
     --addr=ADDR                consul address [default: http://localhost:8500]
-    --CheckID=CheckID          CheckID matcher
-    --ServiceName=ServiceName  ServiceName matcher
+
 """
 
 from docopt import docopt
@@ -24,7 +21,7 @@ def dump(it):
     if arguments['--verbose']: print it
 
 def buildNodeUrl():
-    url = "%(--addr)s/v1/health/node/%(NODE)s?dc=%(DC)s" % arguments
+    url = "%(--addr)s/v1/health/checks/%(SERVICE)s" % arguments
     dump("Url: " + url)
     return url
 
@@ -39,22 +36,12 @@ def printCheck(check):
     print "> %(Node)s:%(ServiceName)s:%(Name)s:%(CheckID)s:%(Status)s" % check
 
 def processFailing(checks):
-    filters = map(lambda field: \
-        lambda x: arguments['--' + field] is None or x[field] == arguments['--'+field],
-        ['CheckID', 'ServiceName']
-    )
-
-    filtered = filter(lambda x: all(f(x) for f in filters), checks)
-    passing  = filter(lambda x: x['Status'] == 'passing', filtered)
-    warning  = filter(lambda x: x['Status'] == 'warning', filtered)
-    critical = filter(lambda x: x['Status'] == 'critical', filtered)
+    passing  = filter(lambda x: x['Status'] == 'passing', checks )
+    warning  = filter(lambda x: x['Status'] == 'warning', checks)
+    critical = filter(lambda x: x['Status'] == 'critical', checks)
 
     if len(checks) == 0:
         print "There is no matching node!"
-        return 1
-
-    if len(filtered) == 0:
-        print "There is no matching check!"
         return 1
 
     checkOutput = lambda x: x["Name"] + ":" + x["Output"]
@@ -78,10 +65,9 @@ if __name__ == '__main__':
     try:
         arguments = docopt(__doc__)
         dump("Arguments: " + str(arguments))
-        if arguments['node']:
-            url = buildNodeUrl()
-            json = getJsonFromUrl(url)
-            exit(processFailing(json))
+        url = buildNodeUrl()
+        json = getJsonFromUrl(url)
+        exit(processFailing(json))
     except exceptions.SystemExit: raise
     except:
         traceback.print_exc()
