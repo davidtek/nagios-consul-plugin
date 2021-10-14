@@ -1,24 +1,17 @@
 ## What is this?
 
-This is a consul check integration plugin for nagios that makes easy to add nagios commands that queries and aggregates specific checks or services by node from a consul agent.
+This is a consul check integration plugin for nagios that makes easy to add nagios commands that queries health checks for a specific service in a consul cluster.
 
-Returns 2 if there are any critical checks, 1 if there are no criticals but warnings. Returns 3 when node not found or when there is no matches based on the given filters (CheckID, ServiceName). Returns 0 on passing checks.
+Returns 2 if there are any critical checks, 1 if there are no criticals but warnings. Returns 3 when node service found. Returns 0 on passing checks.
 
 ## Example
 
-Query the local consul agent for the serf health check of node named consul01 in datacenter dc01:
+Query the local consul agent for the service called redis
 ```
-$ python check-consul-health.py node consul01 dc01 --CheckID=serfHealth
+$ python check-consul-health.py redis
 Passing: 1
-> consul01::Serf Health Status:serfHealth:passing
-```
+> client-194:redis:service: "redis" check:_nomad-check-5b66dc56a4ddb90311cb544f84d299d0de76d0e8:passing
 
-Query for a specific service:
-```
-$ python check-consul-health.py node consul01 dc01 --ServiceName=raft
-Passing: 2
-> consul01:raft:Leader elected & operational:leader:passing
-> consul01:raft:Peer list match:peers:passing
 ```
 
 ## Install dependencies with pip
@@ -30,22 +23,18 @@ pip install -r requirements.txt
 ## Usage
 
 ```
-$ python check-consul-health.py -h
+$ python check-consul-service-health.py -h
 Usage: 
-    check-consul-health.py node NODE DC
+    check-consul-health.py SERVICE
         [--addr=ADDR]
-        [--CheckID=CheckID | --ServiceName=ServiceName]
         [--verbose]
 
 Arguments:
-    NODE  the consul node_name
-    DC    the consul datacenter
+    SERVICE service to check
 
 Options:
     -h --help                  show this
     -v --verbose               verbose output
     --addr=ADDR                consul address [default: http://localhost:8500]
-    --CheckID=CheckID          CheckID matcher
-    --ServiceName=ServiceName  ServiceName matcher
 ```
 
