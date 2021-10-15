@@ -11,7 +11,7 @@ Returns 2 if there are any critical checks, 1 if there are no criticals but warn
 
 Query the local consul agent for the service called redis
 ```
-$ python check-consul-health.py redis
+$ python check-consul-service-health.py redis
 Passing: 1
 > client-194:redis:service: "redis" check:_nomad-check-5b66dc56a4ddb90311cb544f84d299d0de76d0e8:passing
 
