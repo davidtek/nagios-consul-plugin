@@ -41,7 +41,8 @@ def processFailing(checks):
     critical = filter(lambda x: x['Status'] == 'critical', checks)
 
     if len(checks) == 0:
-        print "There is no matching node!"
+        msg = "The service %(SERVICE)s does not exist in consul. The service may be down or not registered."  % arguments
+        print msg
         return 1
 
     checkOutput = lambda x: x["Name"] + ":" + x["Output"]
