@@ -4,6 +4,9 @@ This is a consul check integration plugin for nagios that makes easy to add nagi
 
 Returns 2 if there are any critical checks, 1 if there are no criticals but warnings. Returns 3 when node service found. Returns 0 on passing checks.
 
+
+@note : although forked from nagios-consul-plugin, this fork contains different fonctionality entirely and can coexist with nagios-consul-plugin
+
 ## Example
 
 Query the local consul agent for the service called redis
